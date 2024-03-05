@@ -81,7 +81,7 @@ app.get('/:formId/filteredResponses', async (req, res) => {
         res.json({
           responses: filteredResponses,
           totalResponses: filteredResponses.length,
-          pageCount: pageCount, // Assuming no pagination for simplicity
+          pageCount: pageCount,
         });
       } catch (error) {
         // Handle JSON parsing errors
