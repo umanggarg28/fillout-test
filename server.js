@@ -38,29 +38,34 @@ app.get('/:formId/filteredResponses', async (req, res) => {
                     let filterValue;
                     if (typeof question.value === 'number') {
                         filterValue = parseFloat(filter.value); // Convert to number for numeric comparison
-                    } else if (typeof question.value === 'string' && !isNaN(Date.parse(question.value))) {
+                    } else if (question.type === 'DatePicker') {
                         filterValue = new Date(filter.value); // Convert to Date for ISO date comparison
                     } else {
                         filterValue = filter.value; // Use the filter value as is
                     }
+
+                    const questionValue = question.type === 'DatePicker' ? new Date(question.value) : question.value;
             
+                    // Check if dates comparison
+                    const isDateComparison =  question.type === 'DatePicker';
+
                     // Apply the specified condition to compare the values
                     switch (filter.condition) {
                       case 'equals':
-                        return question.value === filterValue;
+                          return isDateComparison ? questionValue.getTime() === filterValue.getTime() : questionValue === filterValue;
                       case 'does_not_equal':
-                        return question.value !== filterValue;
+                          return isDateComparison ? questionValue.getTime() !== filterValue.getTime() : questionValue !== filterValue;
                       case 'greater_than':
-                        return question.value > filterValue;
+                          return isDateComparison ? questionValue.getTime() > filterValue.getTime() : questionValue > filterValue;
                       case 'less_than':
-                        return question.value < filterValue;
+                          return isDateComparison ? questionValue.getTime() < filterValue.getTime() : questionValue < filterValue;
                       default:
-                        return false; // Handle unsupported conditions as needed
+                          return false; // Handle unsupported conditions as needed
                     }
                   });
                 }
                  // If 'questions' property is not present or not an array, consider it a non-match
-            return false;
+                return false;
             });
     
         // Calculation for page count
