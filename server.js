@@ -44,23 +44,28 @@ app.get('/:formId/filteredResponses', async (req, res) => {
                         filterValue = filter.value; // Use the filter value as is
                     }
 
-                    const questionValue = question.type === 'DatePicker' ? new Date(question.value) : question.value;
+                    const questionValue = (question.value !== null && question.type === 'DatePicker') ? new Date(question.value) : question.value;
             
+                    // Check if either value is null
+                    const isNullComparison = questionValue === null || filterValue === null;
+
                     // Check if dates comparison
                     const isDateComparison =  question.type === 'DatePicker';
 
-                    // Apply the specified condition to compare the values
-                    switch (filter.condition) {
-                      case 'equals':
-                          return isDateComparison ? questionValue.getTime() === filterValue.getTime() : questionValue === filterValue;
-                      case 'does_not_equal':
-                          return isDateComparison ? questionValue.getTime() !== filterValue.getTime() : questionValue !== filterValue;
-                      case 'greater_than':
-                          return isDateComparison ? questionValue.getTime() > filterValue.getTime() : questionValue > filterValue;
-                      case 'less_than':
-                          return isDateComparison ? questionValue.getTime() < filterValue.getTime() : questionValue < filterValue;
-                      default:
-                          return false; // Handle unsupported conditions as needed
+                    if(!isNullComparison){
+                      // Apply the specified condition to compare the values
+                      switch (filter.condition) {
+                        case 'equals':
+                            return isDateComparison ? questionValue.getTime() === filterValue.getTime() : questionValue === filterValue;
+                        case 'does_not_equal':
+                            return isDateComparison ? questionValue.getTime() !== filterValue.getTime() : questionValue !== filterValue;
+                        case 'greater_than':
+                            return isDateComparison ? questionValue.getTime() > filterValue.getTime() : questionValue > filterValue;
+                        case 'less_than':
+                            return isDateComparison ? questionValue.getTime() < filterValue.getTime() : questionValue < filterValue;
+                        default:
+                            return false; // Handle unsupported conditions as needed
+                      }
                     }
                   });
                 }
